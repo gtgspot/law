@@ -1,1 +1,820 @@
-<a href="https://app.eraser.io./workspace/1pCq8wgW0MTIOzorCHDA?diagram=Aga_MI81OarCaVDSZonOA">View on Eraser<br /><img src="https://app.eraser.io/workspace/1pCq8wgW0MTIOzorCHDA/preview?diagram=Aga_MI81OarCaVDSZonOA&type=embed" /></a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Defence Strategy Reactor</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:#090909;color:#d0d0d0;font-family:'JetBrains Mono','Fira Code',monospace}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+textarea:focus,input:focus{outline:none;border-color:#c8a45a !important}
+textarea::placeholder,input::placeholder{color:#2a2a2a}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:#0a0a0a}
+::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:3px}
+button{font-family:'JetBrains Mono','Fira Code',monospace}
+
+/* Output markdown styles */
+.rx-out h1{font-size:15px;color:#c8a45a;border-bottom:1px solid #1a1a1a;padding-bottom:6px;margin:20px 0 10px;font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:.05em}
+.rx-out h2{font-size:13px;color:#a0a0a0;margin:16px 0 6px;font-family:'JetBrains Mono',monospace;font-weight:600}
+.rx-out h3{font-size:12px;color:#8a8a8a;margin:12px 0 4px;font-family:'JetBrains Mono',monospace;font-weight:600}
+.rx-out p{font-size:12.5px;color:#b0b0b0;line-height:1.7;margin:4px 0;font-family:Georgia,serif}
+.rx-out strong{color:#d4b96a}
+.rx-out em{color:#9ab0c8}
+.rx-out ul,.rx-out ol{margin:4px 0 4px 16px;color:#a0a0a0;font-size:12.5px;line-height:1.7;font-family:Georgia,serif}
+.rx-out code{background:#151515;padding:1px 5px;border-radius:2px;font-size:11px;color:#c8a45a;font-family:'JetBrains Mono',monospace}
+.rx-out pre{background:#080808;border:1px solid #1a1a1a;border-radius:4px;padding:12px;overflow-x:auto;margin:10px 0}
+.rx-out pre code{background:none;padding:0;font-size:11px;color:#8a8a8a;line-height:1.5}
+.rx-out blockquote{border-left:2px solid #c8a45a;padding-left:12px;margin:10px 0;color:#7a7a7a;font-style:italic}
+.rx-out table{border-collapse:collapse;width:100%;margin:10px 0;font-size:11px;font-family:'JetBrains Mono',monospace}
+.rx-out th{background:#131313;color:#c8a45a;padding:6px 10px;text-align:left;border:1px solid #1a1a1a;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.05em}
+.rx-out td{padding:6px 10px;border:1px solid #151515;color:#9a9a9a}
+.rx-out tr:nth-child(even){background:rgba(255,255,255,.01)}
+.rx-out hr{border:none;border-top:1px solid #1a1a1a;margin:16px 0}
+
+/* Layout */
+#app{min-height:100vh;display:flex;flex-direction:column}
+#header{border-bottom:1px solid #151515;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#0d0d0d,#090909);flex-shrink:0}
+#tab-bar{display:flex;border-bottom:1px solid #151515;background:#0b0b0b;flex-shrink:0}
+#main{display:flex;flex:1;overflow:hidden}
+#engine-sidebar{width:260px;min-width:260px;border-right:1px solid #151515;background:#0a0a0a;overflow-y:auto;padding:12px;flex-shrink:0}
+#content-area{flex:1;overflow-y:auto;padding:16px 20px}
+
+/* Engine cards */
+.engine-card{border:1px solid #1a1a1a;border-radius:6px;background:#0c0c0c;overflow:hidden;transition:all .2s;margin-bottom:6px}
+.engine-card.active{background:var(--engine-bg)}
+.engine-header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:none;background:none;cursor:pointer}
+.engine-modules{padding:0 10px 10px;display:flex;flex-wrap:wrap;gap:4px}
+
+/* Chips */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:3px;border:1px solid #2a2a2a;background:transparent;color:#5a5a5a;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:400;cursor:pointer;transition:all .15s;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
+.chip.active{font-weight:600}
+
+/* Preset buttons */
+.preset-btn{padding:5px 8px;border-radius:3px;border:1px solid #1a1a1a;background:#0c0c0c;color:#6a6a6a;font-size:10px;cursor:pointer;font-family:'JetBrains Mono',monospace;text-align:left;transition:all .15s;width:100%;margin-bottom:3px}
+.preset-btn:hover{border-color:#2a2a2a;color:#8a8a8a}
+
+/* Tab buttons */
+.tab-btn{padding:8px 20px;border:none;border-bottom:2px solid transparent;background:none;color:#3a3a3a;font-size:10px;letter-spacing:.12em;font-family:'JetBrains Mono',monospace;font-weight:400;cursor:pointer;text-transform:uppercase}
+.tab-btn.active{border-bottom-color:#c8a45a;color:#c8a45a;font-weight:600}
+
+/* Matter profile fields */
+.matter-field label{display:block;font-size:9px;color:#5a5a5a;margin-bottom:3px;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
+.matter-field input,.matter-field textarea{width:100%;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:3px;padding:6px 8px;color:#a0a0a0;font-size:11px;font-family:'JetBrains Mono',monospace;box-sizing:border-box}
+.matter-field textarea{height:48px;resize:vertical}
+.matter-field{margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- HEADER -->
+  <div id="header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:32px;height:32px;border-radius:5px;background:linear-gradient(135deg,#c8a45a18,#c8a45a06);border:1px solid #c8a45a28;display:flex;align-items:center;justify-content:center;font-size:16px">⚖</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;letter-spacing:.1em;color:#c8a45a">DEFENCE STRATEGY REACTOR</div>
+        <div style="font-size:9px;color:#3a3a3a;letter-spacing:.12em;margin-top:1px">10 ENGINES · TYPED PIPELINES · COUNSEL-GRADE OUTPUT</div>
+      </div>
+    </div>
+    <div id="header-status" style="display:flex;align-items:center;gap:10px"></div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div id="tab-bar">
+    <button class="tab-btn active" data-tab="config" onclick="switchTab('config')">CONFIGURE</button>
+    <button class="tab-btn" data-tab="output" onclick="switchTab('output')">OUTPUT</button>
+    <div style="flex:1"></div>
+    <button onclick="resetAll()" style="padding:8px 14px;border:none;background:none;color:#2a2a2a;font-size:10px;letter-spacing:.08em;font-family:'JetBrains Mono',monospace;cursor:pointer">RESET</button>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <!-- ENGINE SIDEBAR -->
+    <div id="engine-sidebar">
+      <div style="font-size:9px;letter-spacing:.18em;color:#4a4a4a;margin-bottom:8px;font-weight:700;text-transform:uppercase">ENGINES</div>
+      <div id="engine-list"></div>
+      <div style="margin-top:12px">
+        <div style="font-size:9px;letter-spacing:.18em;color:#4a4a4a;margin-bottom:6px;font-weight:700;text-transform:uppercase">PRESETS</div>
+        <div id="preset-list"></div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="content-area">
+      <div id="panel-config"></div>
+      <div id="panel-output" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// SYSTEM PROMPT
+// ═══════════════════════════════════════════════════════════════
+const SYSTEM_PROMPT = `You are a multi-engine legal analysis reactor operating TEN fused analytical systems for Victorian criminal defence. You produce counsel-grade output for a self-represented accused in Victoria, Australia. Every claim must be grounded in evidence, statute, or authority. Never deflect with "consult a lawyer."
+
+═══════ ENGINE 1: ARTIFICIAL ANALYSIS (GDPval-AA) ═══════
+Seven analytical modes — apply minimum needed:
+• CAUSAL: trace_backward/forward, isolate_root, test_counterfactual, assess_sufficiency
+• COMPARATIVE: align_dimensions, evaluate_per_criterion, weight_criteria, sensitivity_test
+• GAP: map_required vs map_actual, classify_gap (missing|incomplete|non-conforming), project_consequence, derive_remediation
+• RISK: identify_threats, assess_likelihood × impact, calculate_severity, identify_cascades, assess_residual after mitigation
+• STRUCTURAL: decompose, map_dependencies, identify_bottlenecks, assess_coupling, assess_resilience
+• TEMPORAL: extract_timeline, identify_trend, identify_inflections, diagnose_inflection, project_forward
+• ADVERSARIAL: steelman_opposition, identify_vulnerabilities, simulate_attack, assess_exposure, derive_hardening, red_team
+
+Mode composition: → (sequential), ‖ (parallel), ? (conditional), ↻ (iterative)
+Common: Defence Hardening = Adversarial → Gap → Risk | Root Cause = Structural → Causal → Gap
+
+═══════ ENGINE 2: VICTORIAN COMMON LAW ENGINE ═══════
+Three components:
+A) Discovery: AustLII, Jade.io, JCV, HCA search. Provision-specific → principle-based → broad concept queries.
+B) Assessment: Authority Cards with citation, court, hierarchy, ratio decidendi, obiter dicta, application to facts, distinguishability, treatment history (affirmed/applied/distinguished/doubted/overruled), currency status, confidence calibration (ratio accuracy %, currency %, factual application %).
+C) Integration: Statute + judicial interpretation → integrated legal position. Conflict resolution: hierarchy > later-in-time > full bench > distinguish.
+
+═══════ ENGINE 3: GDPval-AA / BIGLAW BENCH v3.0 ═══════
+Module 1: Elements & Exclusionary Analysis — charge decomposition, s.138 Evidence Act sequential analysis with all s.138(3) factors, Charter overlay, exclusion cascade matrix
+Module 2: Argument Construction — proposition → authority → factual foundation → reasoning chain → prosecution counter → rebuttal → strength rating
+Module 3: Negotiation & Plea — leverage assessment, diversion eligibility (CJDP s.59, adjourned undertaking s.75), timing, fallback
+Module 4: Hearing Preparation — oral submission scripts, cross-examination sequences (closed questions, trap progression, evasion handling), objection quick-draw
+Module 5: Document Processing — transcript review, contradiction mapping, disclosure audit (s.50-51 CPA)
+Module 6: Procedural Compliance — police procedure vs statutory/VPM requirements, device compliance
+Module 7: BWC Forensic Review — timestamp analysis, gap detection, audio-visual sync, officer statement consistency
+Module 8: Case Operations — deadlines, exhibits, compliance tracking, cost quantification, multi-matter coordination
+
+═══════ ENGINE 4: VICTORIAN LEGISLATION ENGINE ═══════
+Live statutory retrieval with 17 bundled Acts/Regulations. Reasoning modes:
+• Provision Interpretation: plain meaning → context → purpose → extrinsic materials → Charter s.32(1) overlay
+• Application to Facts: provision elements → fact mapping → conclusion
+• Cross-Referencing: interaction type → conflict resolution (express override > specific/general > later-in-time)
+• Procedural Mechanics: sequence extraction → time limits → consequence of non-compliance
+Key Acts: RSA 1986, Evidence Act 2008, CPA 2009, Crimes Act 1958, Sentencing Act 1991, Charter 2006, Interpretation Act 1984
+Always cross-reference regulations (Road Safety General Regs 2019 Regs 15-18 for POFT/drug testing procedures).
+
+═══════ ENGINE 5: LEGAL FORENSIC ANALYZER ═══════
+Systematic audit framework:
+• Pre-intercept: reasonable suspicion documentation, officer identification, recording timing
+• Intercept execution: statutory warnings (verbatim compliance), rights communication, consent vs direction
+• Evidence collection: chain of custody, calibration certificates, sample handling, contamination controls
+• BWC forensic: timestamp/observation/statutory-ref/defect-classification table, gap analysis, sync anomalies
+• s.138 exclusion pathway: threshold → probative value → s.138(3) balancing → determination
+• Defence taxonomy: Substantive (identity/actus reus/mens rea) | Procedural (jurisdiction/statutory non-compliance/limitation) | Evidentiary (s.138/reliability/authentication)
+
+═══════ ENGINE 6: LITIGATION DOCUMENT PROCESSOR ═══════
+Module 1: Transcript Analysis — structured extraction, admission/concession register, contradiction detection, judicial signal tracking
+Module 2: Disclosure Bundle Review — completeness audit (s.50-51 CPA), document triage (Critical/Relevant/Marginal/Irrelevant), multi-document consistency check
+Module 3: Cross-Reference Tracking — legislative cross-reference map, defined term register, evidence chain mapping
+Module 4: Witness Statement Processing — decomposition (assertions, gaps, credibility, cross-exam targets), multi-witness comparison
+Output: every finding with source reference, classification, materiality, action recommendation
+
+═══════ ENGINE 7: CASE OPERATIONS MANAGER ═══════
+Module 1: Deadline Tracking — statutory deadlines with trigger/computation/consequence, case register
+Module 2: Exhibit Management — prosecution/defence exhibit inventory, hearing bundle compilation (9-tab standard order)
+Module 3: Deliverables — format-matched outputs (docx for submissions, xlsx for matrices, pdf for filing, html for diagrams)
+Module 4: Compliance Tracking — order compliance register, breach risk assessment
+Module 5: Multi-Matter Coordination — dashboard, sequencing notes, interdependency mapping, consolidation assessment
+
+═══════ ENGINE 8: SKILL FUSION REACTOR ═══════
+Pipeline orchestration. Pre-built patterns:
+• Legal Defence Pipeline: doc-processor → forensic-analyzer → biglaw-engine → case-ops
+• Governance Challenge: governance-engine → forensic-analyzer → biglaw-engine → case-ops
+• Evidence-to-Argument: doc-processor → glossary → forensic-analyzer → independent-biglaw → full-biglaw
+• Prosecution Weakness: gap-analysis → structural-analysis → doc-processor → forensic-analyzer
+Execute as DAG with typed fusion points. Validate interfaces at every handoff.
+
+═══════ ENGINE 9: LEGAL IR INTERFACE ═══════
+Middleware layer. Transform analyzer findings into typed intermediate representation:
+• Emit: classify (statutory/procedural/evidentiary/factual/inferential), source, assert, calibrate (established/arguable/speculative), link, assign ID
+• Validate: schema check, referential integrity, orphan detection
+• Enrich: argument_strength (0.0-1.0), chain_depth, vulnerability vectors, biglaw_module routing, argument clustering
+• Handoff: route enriched IR to correct BigLaw module based on premise category
+
+═══════ ENGINE 10: PUBLIC AUTHORITY GOVERNANCE INTEGRITY ═══════
+9-layer recursive analysis:
+L1: Authority Source Identification | L2: Delegation Chain Tracing | L3: Procedural Compliance | L4: Substantive Standards | L5: Policy Alignment | L6: Administrative Fairness | L7: Available Remedies | L8: Evidence Sufficiency | L9: Defect Nexus Analysis (recursive reprocessing until stable, max 3 passes)
+Use for: challenging police/prosecution authority, testing governance of drug testing programs, auditing compliance frameworks.
+
+═══════ CROSS-ENGINE RULES ═══════
+1. Where AA identifies a gap → BigLaw fills it with argument construction
+2. Where BigLaw constructs argument → Common Law supplies binding authority
+3. Where Legislation Engine interprets statute → Common Law verifies judicial interpretation
+4. Where Forensic Analyzer finds defects → IR Interface structures into typed premises → BigLaw builds exclusion argument
+5. Where Doc Processor finds contradictions → BigLaw builds cross-examination sequences
+6. Where Case Ops identifies deadlines → flag approaching deadlines regardless of query
+7. Where Governance Engine finds authority defects → BigLaw constructs challenge
+8. Confidence-calibrate EVERY position (High/Medium/Low with basis)
+9. Adversarial stress-test final position even if not explicitly selected
+10. Conclude with NEXT ACTIONS — specific, sequenced, with deadlines`;
+
+// ═══════════════════════════════════════════════════════════════
+// ENGINE DEFINITIONS
+// ═══════════════════════════════════════════════════════════════
+const ENGINES = {
+  aa: {
+    name: "Artificial Analysis", short: "AA", color: "#c8a45a", icon: "◈",
+    desc: "Seven analytical reasoning modes",
+    modules: [
+      { id: "adversarial", label: "Adversarial", icon: "⚔", desc: "Steelman opposition, vulnerability scan, attack simulation" },
+      { id: "risk", label: "Risk", icon: "⚠", desc: "Threats × likelihood × impact, cascade chains" },
+      { id: "gap", label: "Gap", icon: "◇", desc: "Required vs actual state, remediation paths" },
+      { id: "causal", label: "Causal", icon: "⟿", desc: "Root cause, counterfactual testing" },
+      { id: "structural", label: "Structural", icon: "▣", desc: "Dependencies, bottlenecks, coupling" },
+      { id: "temporal", label: "Temporal", icon: "⧖", desc: "Timeline, inflections, trajectory" },
+      { id: "comparative", label: "Comparative", icon: "⇋", desc: "Options under constraints, sensitivity" },
+    ],
+  },
+  commonlaw: {
+    name: "Common Law Engine", short: "CL", color: "#7a9ec2", icon: "⚖",
+    desc: "Case law discovery, assessment, integration",
+    modules: [
+      { id: "cl_discovery", label: "Discovery", desc: "Find authority via AustLII, Jade.io, JCV, HCA" },
+      { id: "cl_assessment", label: "Assessment", desc: "Authority Cards: ratio, treatment, confidence" },
+      { id: "cl_integration", label: "Integration", desc: "Statute + case law → integrated position" },
+      { id: "cl_distinguish", label: "Distinguish", desc: "Distinguish opponent's authority" },
+      { id: "cl_currency", label: "Currency", desc: "Verify case still good law" },
+    ],
+  },
+  biglaw: {
+    name: "BigLaw Bench v3.0", short: "BL", color: "#9a6ab0", icon: "⬡",
+    desc: "Counsel-grade argument construction & strategy",
+    modules: [
+      { id: "bl_exclusion", label: "s.138 Exclusion", desc: "Elements + exclusionary analysis" },
+      { id: "bl_argument", label: "Argument Build", desc: "Structured argument with authority" },
+      { id: "bl_negotiation", label: "Negotiation", desc: "Plea strategy, diversion, leverage" },
+      { id: "bl_hearing", label: "Hearing Prep", desc: "Oral scripts, cross-exam, objections" },
+      { id: "bl_document", label: "Doc Processing", desc: "Transcript/disclosure/contradiction" },
+      { id: "bl_procedural", label: "Procedural Audit", desc: "Police procedure compliance" },
+      { id: "bl_bwc", label: "BWC Review", desc: "Body-worn camera forensics" },
+      { id: "bl_operations", label: "Case Ops", desc: "Deadlines, exhibits, costs" },
+    ],
+  },
+  legislation: {
+    name: "Legislation Engine", short: "LE", color: "#5ab08a", icon: "§",
+    desc: "Live statutory retrieval & interpretation",
+    modules: [
+      { id: "le_interpret", label: "Interpretation", desc: "Plain meaning → context → purpose → Charter" },
+      { id: "le_apply", label: "Apply to Facts", desc: "Elements → fact mapping → conclusion" },
+      { id: "le_crossref", label: "Cross-Reference", desc: "Inter-provision interaction & conflict" },
+      { id: "le_procedure", label: "Procedural Mech.", desc: "Steps, time limits, consequences" },
+    ],
+  },
+  forensic: {
+    name: "Legal Forensic Analyzer", short: "FA", color: "#c27a5a", icon: "🔬",
+    desc: "Procedural compliance & evidence chain audit",
+    modules: [
+      { id: "fa_preintercept", label: "Pre-Intercept", desc: "Suspicion, identification, recording" },
+      { id: "fa_execution", label: "Intercept Exec", desc: "Warnings, rights, consent/direction" },
+      { id: "fa_collection", label: "Evidence Collect", desc: "Chain of custody, calibration, handling" },
+      { id: "fa_bwc", label: "BWC Forensic", desc: "Timestamps, gaps, sync anomalies" },
+      { id: "fa_exclusion", label: "s.138 Pathway", desc: "Threshold → balancing → determination" },
+    ],
+  },
+  docprocessor: {
+    name: "Document Processor", short: "DP", color: "#b0a05a", icon: "📄",
+    desc: "Transcripts, disclosure, contradiction mapping",
+    modules: [
+      { id: "dp_transcript", label: "Transcript", desc: "Extraction, admissions, judicial signals" },
+      { id: "dp_disclosure", label: "Disclosure Audit", desc: "Completeness vs s.50-51 CPA" },
+      { id: "dp_crossref", label: "Cross-Reference", desc: "Legislative refs, defined terms, evidence chains" },
+      { id: "dp_witness", label: "Witness Statements", desc: "Decomposition, multi-witness comparison" },
+    ],
+  },
+  caseops: {
+    name: "Case Operations", short: "CO", color: "#6ab0a0", icon: "📋",
+    desc: "Deadlines, exhibits, compliance, multi-matter",
+    modules: [
+      { id: "co_deadlines", label: "Deadlines", desc: "Statutory calculation, interlocutory sequencing" },
+      { id: "co_exhibits", label: "Exhibits", desc: "Inventory, hearing bundle (9-tab)" },
+      { id: "co_compliance", label: "Compliance", desc: "Order register, breach risk" },
+      { id: "co_costs", label: "Cost Quant.", desc: "Financial exposure, fine ranges" },
+      { id: "co_multimatter", label: "Multi-Matter", desc: "Coordination, sequencing, interdependency" },
+    ],
+  },
+  fusion: {
+    name: "Fusion Reactor", short: "FR", color: "#b05a7a", icon: "⚛",
+    desc: "Pipeline orchestration & typed composition",
+    modules: [
+      { id: "fr_pipeline", label: "Pipeline Build", desc: "DAG construction with typed edges" },
+      { id: "fr_validate", label: "Interface Validate", desc: "Type check at fusion points" },
+      { id: "fr_gaps", label: "Gap Detection", desc: "Missing skills, weak interfaces" },
+    ],
+  },
+  irinterface: {
+    name: "Legal IR Interface", short: "IR", color: "#7ab06a", icon: "⇄",
+    desc: "Typed middleware: analyzer → biglaw handoff",
+    modules: [
+      { id: "ir_emit", label: "Emit IR", desc: "Findings → typed LegalPremise objects" },
+      { id: "ir_validate", label: "Validate Schema", desc: "Referential integrity, orphan detection" },
+      { id: "ir_enrich", label: "Enrich", desc: "Strength scores, clustering, module routing" },
+    ],
+  },
+  governance: {
+    name: "Governance Integrity", short: "GI", color: "#a06ab0", icon: "🏛",
+    desc: "Public authority power & compliance audit",
+    modules: [
+      { id: "gi_authority", label: "Authority Source", desc: "Trace power to enabling statute" },
+      { id: "gi_delegation", label: "Delegation Chain", desc: "Instrument validity, conditions" },
+      { id: "gi_compliance", label: "Proc. Compliance", desc: "Mandatory steps, notice, reasons" },
+      { id: "gi_fairness", label: "Admin Fairness", desc: "Hearing rule, bias, proportionality" },
+      { id: "gi_remedies", label: "Remedies", desc: "JR, VCAT, complaints, damages" },
+      { id: "gi_nexus", label: "Defect Nexus", desc: "Recursive reprocessing (L9)" },
+    ],
+  },
+};
+
+const PRESETS = [
+  {
+    label: "Full Defence Audit", desc: "Complete case analysis across all engines",
+    engines: { aa:["adversarial","risk","gap","structural"], biglaw:["bl_exclusion","bl_argument","bl_procedural"], commonlaw:["cl_discovery","cl_assessment","cl_integration"], legislation:["le_interpret","le_crossref"], forensic:["fa_execution","fa_collection","fa_exclusion"], docprocessor:[], caseops:["co_deadlines"], fusion:[], irinterface:["ir_enrich"], governance:[] },
+  },
+  {
+    label: "Hearing Prep Pipeline", desc: "Full pipeline: evidence → analysis → arguments → bundle",
+    engines: { aa:["adversarial"], biglaw:["bl_hearing","bl_argument","bl_exclusion"], commonlaw:["cl_discovery","cl_assessment","cl_distinguish"], legislation:["le_interpret"], forensic:["fa_execution","fa_bwc"], docprocessor:["dp_transcript"], caseops:["co_exhibits","co_deadlines"], fusion:["fr_pipeline"], irinterface:["ir_emit","ir_enrich"], governance:[] },
+  },
+  {
+    label: "s.138 Exclusion Build", desc: "Evidence exclusion from procedural defects",
+    engines: { aa:["causal","risk","adversarial"], biglaw:["bl_exclusion","bl_argument","bl_procedural","bl_bwc"], commonlaw:["cl_discovery","cl_integration"], legislation:["le_interpret","le_crossref"], forensic:["fa_execution","fa_collection","fa_bwc","fa_exclusion"], docprocessor:[], caseops:[], fusion:[], irinterface:["ir_emit","ir_validate","ir_enrich"], governance:[] },
+  },
+  {
+    label: "Prosecution Weakness Scan", desc: "Systematic identification of prosecution case gaps",
+    engines: { aa:["gap","adversarial","structural"], biglaw:["bl_exclusion","bl_document","bl_procedural"], commonlaw:["cl_assessment"], legislation:["le_interpret","le_apply"], forensic:["fa_execution","fa_collection"], docprocessor:["dp_disclosure","dp_witness"], caseops:[], fusion:[], irinterface:[], governance:[] },
+  },
+  {
+    label: "Governance Challenge", desc: "Challenge public authority power/procedure",
+    engines: { aa:["structural","gap","adversarial"], biglaw:["bl_argument"], commonlaw:["cl_discovery","cl_integration"], legislation:["le_interpret","le_crossref","le_procedure"], forensic:[], docprocessor:[], caseops:["co_deadlines"], fusion:["fr_pipeline"], irinterface:["ir_enrich"], governance:["gi_authority","gi_delegation","gi_compliance","gi_fairness","gi_remedies","gi_nexus"] },
+  },
+  {
+    label: "Strategic Risk Map", desc: "Full risk landscape with mitigation strategy",
+    engines: { aa:["risk","adversarial","temporal","comparative"], biglaw:["bl_negotiation","bl_argument"], commonlaw:["cl_integration"], legislation:["le_apply"], forensic:[], docprocessor:[], caseops:["co_costs","co_multimatter"], fusion:[], irinterface:[], governance:[] },
+  },
+  {
+    label: "Evidence-to-Argument Pipeline", desc: "Raw documents → structured findings → court-ready arguments",
+    engines: { aa:["adversarial","gap"], biglaw:["bl_argument","bl_hearing"], commonlaw:["cl_discovery","cl_assessment"], legislation:["le_interpret"], forensic:["fa_execution","fa_collection"], docprocessor:["dp_transcript","dp_disclosure","dp_crossref","dp_witness"], caseops:["co_exhibits"], fusion:["fr_pipeline","fr_validate"], irinterface:["ir_emit","ir_validate","ir_enrich"], governance:[] },
+  },
+  {
+    label: "Cross-Examination Builder", desc: "Build cross-exam sequences from contradictions",
+    engines: { aa:["adversarial"], biglaw:["bl_hearing","bl_document"], commonlaw:[], legislation:[], forensic:["fa_bwc"], docprocessor:["dp_transcript","dp_witness"], caseops:[], fusion:[], irinterface:[], governance:[] },
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+const state = {
+  selections: {},
+  collapsed: {},
+  facts: "",
+  question: "",
+  matterProfile: {},
+  showMatter: false,
+  response: "",
+  status: "idle", // idle | loading | complete | error
+  history: [],
+  followUp: "",
+  activePanel: "config",
+};
+
+// Init selections and collapsed
+Object.keys(ENGINES).forEach(k => {
+  state.selections[k] = [];
+  state.collapsed[k] = true;
+});
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+function esc(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function renderMd(text) {
+  let h = esc(text);
+  h = h.replace(/```(\w*)\n([\s\S]*?)```/g, (_, l, c) => `<pre><code>${c.trim()}</code></pre>`);
+  h = h.replace(/`([^`]+)`/g, "<code>$1</code>");
+  h = h.replace(/^### (.+)$/gm, "<h3>$1</h3>");
+  h = h.replace(/^## (.+)$/gm, "<h2>$1</h2>");
+  h = h.replace(/^# (.+)$/gm, "<h1>$1</h1>");
+  h = h.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
+  h = h.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  h = h.replace(/\*(.+?)\*/g, "<em>$1</em>");
+  h = h.replace(/^&gt; (.+)$/gm, "<blockquote>$1</blockquote>");
+  h = h.replace(/^---$/gm, "<hr>");
+  h = h.replace(
+    /^\|(.+)\|\n\|[-| :]+\|\n((?:\|.+\|\n?)*)/gm,
+    (_, header, body) => {
+      const ths = header.split("|").map(x => x.trim()).filter(Boolean).map(x => `<th>${x}</th>`).join("");
+      const rows = body.trim().split("\n").map(row => {
+        const tds = row.split("|").map(c => c.trim()).filter(Boolean).map(c => `<td>${c}</td>`).join("");
+        return `<tr>${tds}</tr>`;
+      }).join("");
+      return `<table><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table>`;
+    }
+  );
+  h = h.replace(/^(\d+)\. (.+)$/gm, "<li>$2</li>");
+  h = h.replace(/^- (.+)$/gm, "<li>$1</li>");
+  h = h.replace(/((?:<li>.*<\/li>\n?)+)/g, "<ul>$1</ul>");
+  h = h.replace(/^(?!<[hulotbp]|<\/)(.+)$/gm, (m) => m.trim() ? `<p>${m}</p>` : "");
+  return h;
+}
+
+function getTotalActive() {
+  return Object.values(state.selections).reduce((a, b) => a + b.length, 0);
+}
+
+function getActiveEngineCount() {
+  return Object.values(state.selections).filter(v => v.length > 0).length;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
+
+function renderHeaderStatus() {
+  const cfgs = {
+    idle:     { color: "#3a3a3a", text: "STANDBY",    pulse: false },
+    loading:  { color: "#c8a45a", text: "PROCESSING", pulse: true  },
+    complete: { color: "#4a9a6a", text: "COMPLETE",   pulse: false },
+    error:    { color: "#9a4a4a", text: "ERROR",      pulse: false },
+  };
+  const sc = cfgs[state.status];
+  const total = getTotalActive();
+  const turns = Math.floor(state.history.length / 2);
+
+  let html = `
+    <div style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:3px;border:1px solid ${sc.color};background:${sc.color}11">
+      <div style="width:5px;height:5px;border-radius:50%;background:${sc.color};${sc.pulse ? 'animation:pulse 1.5s ease-in-out infinite' : ''}"></div>
+      <span style="font-size:9px;letter-spacing:.12em;color:${sc.color};font-weight:600">${sc.text}</span>
+    </div>`;
+  if (total > 0) {
+    html += `<span style="font-size:9px;padding:3px 8px;border:1px solid #1a1a1a;border-radius:3px;color:#4a4a4a">${total} MODULES</span>`;
+  }
+  if (turns > 0) {
+    html += `<span style="font-size:9px;padding:3px 8px;border:1px solid #1a1a1a;border-radius:3px;color:#4a4a4a">${turns} TURNS</span>`;
+  }
+  document.getElementById("header-status").innerHTML = html;
+}
+
+function renderEngineList() {
+  const el = document.getElementById("engine-list");
+  let html = "";
+  for (const [k, e] of Object.entries(ENGINES)) {
+    const sel = state.selections[k];
+    const active = sel.length;
+    const total = e.modules.length;
+    const isCollapsed = state.collapsed[k];
+    const borderColor = active > 0 ? e.color + "44" : "#1a1a1a";
+    const bg = active > 0 ? `${e.color}06` : "#0c0c0c";
+
+    html += `<div class="engine-card" style="border-color:${borderColor};background:${bg}">`;
+    html += `<button class="engine-header" onclick="toggleEngineCollapse('${k}')">`;
+    html += `<div style="display:flex;align-items:center;gap:8px">`;
+    html += `<span style="font-size:16px">${e.icon}</span>`;
+    html += `<div style="text-align:left">`;
+    html += `<div style="font-size:11px;font-weight:700;color:${active > 0 ? e.color : '#6a6a6a'};font-family:'JetBrains Mono',monospace;letter-spacing:.05em">${e.short}</div>`;
+    html += `<div style="font-size:9px;color:#4a4a4a;font-family:'JetBrains Mono',monospace">${e.name}</div>`;
+    html += `</div></div>`;
+    html += `<div style="display:flex;align-items:center;gap:6px">`;
+    if (active > 0) {
+      html += `<span style="font-size:9px;padding:2px 6px;border-radius:10px;background:${e.color}22;color:${e.color};font-family:'JetBrains Mono',monospace;font-weight:700">${active}/${total}</span>`;
+    }
+    html += `<span style="color:#3a3a3a;font-size:10px;transform:${isCollapsed ? '' : 'rotate(90deg)'};transition:transform .15s;display:inline-block">▶</span>`;
+    html += `</div></button>`;
+
+    if (!isCollapsed) {
+      html += `<div class="engine-modules">`;
+      for (const m of e.modules) {
+        const isActive = sel.includes(m.id);
+        const borderC = isActive ? e.color : "#2a2a2a";
+        const bgC = isActive ? `${e.color}15` : "transparent";
+        const colorC = isActive ? e.color : "#5a5a5a";
+        const fw = isActive ? 600 : 400;
+        html += `<button class="chip${isActive ? ' active' : ''}" style="border-color:${borderC};background:${bgC};color:${colorC};font-weight:${fw}" onclick="toggleModule('${k}','${m.id}')">`;
+        if (m.icon) html += `<span style="font-size:11px">${m.icon}</span>`;
+        html += `${m.label}</button>`;
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  }
+  el.innerHTML = html;
+}
+
+function renderPresetList() {
+  const el = document.getElementById("preset-list");
+  let html = "";
+  for (const p of PRESETS) {
+    html += `<button class="preset-btn" onclick="applyPreset('${p.label}')" title="${esc(p.desc)}">${p.label}</button>`;
+  }
+  el.innerHTML = html;
+}
+
+function renderPipelineViz() {
+  const activeEngines = Object.entries(ENGINES)
+    .filter(([k]) => state.selections[k]?.length > 0)
+    .map(([k, e]) => ({ key: k, ...e, count: state.selections[k].length }));
+
+  if (activeEngines.length === 0) return "";
+
+  let html = `<div style="padding:12px;border-radius:6px;border:1px solid #1a1a1a;background:#0a0a0a;margin-bottom:16px">`;
+  html += `<div style="font-size:9px;letter-spacing:.2em;color:#4a4a4a;margin-bottom:8px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;font-weight:700">ACTIVE PIPELINE</div>`;
+  html += `<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">`;
+  activeEngines.forEach((e, i) => {
+    html += `<div style="display:flex;align-items:center;gap:4px">`;
+    html += `<div style="display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:3px;border:1px solid ${e.color}44;background:${e.color}0a">`;
+    html += `<span style="font-size:12px">${e.icon}</span>`;
+    html += `<span style="font-size:10px;font-weight:700;color:${e.color};font-family:'JetBrains Mono',monospace">${e.short}</span>`;
+    html += `<span style="font-size:8px;color:${e.color}88;font-family:'JetBrains Mono',monospace">×${e.count}</span>`;
+    html += `</div>`;
+    if (i < activeEngines.length - 1) {
+      html += `<span style="color:#2a2a2a;font-size:10px;font-family:monospace">→</span>`;
+    }
+    html += `</div>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
+function renderMatterProfile() {
+  if (!state.showMatter) {
+    const hasData = state.matterProfile.charges ? "(set)" : "(empty)";
+    return `<button onclick="toggleMatterProfile()" style="width:100%;padding:8px;border:1px solid #1a1a1a;border-radius:4px;background:#0c0c0c;color:#4a4a4a;font-size:10px;cursor:pointer;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-align:left;margin-bottom:12px">▸ MATTER PROFILE ${hasData}</button>`;
+  }
+
+  const fields = [
+    { key: "charges", label: "Charges", placeholder: "s.49(1)(bb) RSA 1986; s.18(1) RSA 1986", multi: true },
+    { key: "court", label: "Court / Stage", placeholder: "Magistrates' Court — Moorabbin — Contest Mention" },
+    { key: "nextDate", label: "Next Date", placeholder: "2026-04-15" },
+    { key: "stakes", label: "Stakes", placeholder: "Fine + licence cancellation (no imprisonment)" },
+    { key: "disclosureStatus", label: "Disclosure Status", placeholder: "Partial — BWC received, SOPs admitted non-existent" },
+    { key: "defencePosture", label: "Defence Posture", placeholder: "Contest — statutory trigger failure + s.138 exclusion" },
+    { key: "keyEvidence", label: "Key Evidence / Weaknesses", placeholder: "POFT negative per manufacturer; 51min BWC redaction...", multi: true },
+  ];
+
+  let html = `<div style="border:1px solid #1a1a1a;border-radius:6px;background:#0c0c0c;padding:12px;margin-bottom:12px">`;
+  html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">`;
+  html += `<span style="font-size:10px;letter-spacing:.15em;color:#c8a45a;font-family:'JetBrains Mono',monospace;font-weight:700">MATTER PROFILE</span>`;
+  html += `<button onclick="toggleMatterProfile()" style="background:none;border:none;color:#3a3a3a;cursor:pointer;font-size:10px;font-family:'JetBrains Mono',monospace">▾ COLLAPSE</button>`;
+  html += `</div>`;
+
+  for (const f of fields) {
+    const val = esc(state.matterProfile[f.key] || "");
+    html += `<div class="matter-field"><label>${f.label}</label>`;
+    if (f.multi) {
+      html += `<textarea placeholder="${f.placeholder}" oninput="updateMatterField('${f.key}',this.value)">${val}</textarea>`;
+    } else {
+      html += `<input value="${val}" placeholder="${f.placeholder}" oninput="updateMatterField('${f.key}',this.value)">`;
+    }
+    html += `</div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function renderConfigPanel() {
+  const total = getTotalActive();
+  const engineCount = getActiveEngineCount();
+  const canExecute = state.status !== "loading" && (state.facts.trim() || state.question.trim());
+
+  let html = renderPipelineViz();
+  html += renderMatterProfile();
+
+  html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">`;
+  // Facts
+  html += `<div>`;
+  html += `<label style="display:block;font-size:9px;letter-spacing:.15em;color:#c8a45a;margin-bottom:4px;font-weight:700;text-transform:uppercase">CASE FACTS</label>`;
+  html += `<textarea id="input-facts" oninput="state.facts=this.value" placeholder="Material facts, evidence, procedural history, statutory provisions..." style="width:100%;height:180px;background:#0b0b0b;border:1px solid #1a1a1a;border-radius:4px;padding:10px 12px;color:#a0a0a0;font-size:12px;font-family:'JetBrains Mono',monospace;line-height:1.7;resize:vertical;box-sizing:border-box">${esc(state.facts)}</textarea>`;
+  html += `</div>`;
+  // Question
+  html += `<div>`;
+  html += `<label style="display:block;font-size:9px;letter-spacing:.15em;color:#c8a45a;margin-bottom:4px;font-weight:700;text-transform:uppercase">QUESTION / TASK</label>`;
+  html += `<textarea id="input-question" oninput="state.question=this.value" placeholder="Build my s.138 exclusion argument... Identify prosecution weaknesses... Prepare cross-examination..." style="width:100%;height:180px;background:#0b0b0b;border:1px solid #1a1a1a;border-radius:4px;padding:10px 12px;color:#a0a0a0;font-size:12px;font-family:'JetBrains Mono',monospace;line-height:1.7;resize:vertical;box-sizing:border-box">${esc(state.question)}</textarea>`;
+  html += `</div></div>`;
+
+  // Execute button
+  const opacity = canExecute ? 1 : 0.3;
+  const cursor = state.status === "loading" ? "wait" : "pointer";
+  const btnBg = state.status === "loading" ? "#151515" : "linear-gradient(135deg,rgba(200,164,90,.18),rgba(200,164,90,.06))";
+  const btnLabel = state.status === "loading" ? "⟳ PROCESSING..." : "▶ EXECUTE REACTOR";
+
+  html += `<div style="display:flex;align-items:center;gap:12px">`;
+  html += `<button onclick="executeReactor()" ${canExecute ? '' : 'disabled'} style="padding:10px 28px;border-radius:4px;border:1px solid #c8a45a;background:${btnBg};color:#c8a45a;font-size:11px;font-weight:700;letter-spacing:.12em;font-family:'JetBrains Mono',monospace;cursor:${cursor};text-transform:uppercase;opacity:${opacity}">${btnLabel}</button>`;
+  html += `<span style="font-size:10px;color:#3a3a3a">${total} modules across ${engineCount} engines</span>`;
+  html += `</div>`;
+
+  document.getElementById("panel-config").innerHTML = html;
+}
+
+function renderOutputPanel() {
+  let html = "";
+
+  if (state.status === "idle") {
+    html += `<div style="flex:1;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid #151515;background:#0b0b0b;min-height:400px">`;
+    html += `<div style="text-align:center;color:#2a2a2a">`;
+    html += `<div style="font-size:40px;margin-bottom:12px;opacity:.2">⚖</div>`;
+    html += `<div style="font-size:10px;letter-spacing:.18em;font-family:'JetBrains Mono',monospace">AWAITING INPUT</div>`;
+    html += `</div></div>`;
+  } else {
+    html += renderPipelineViz();
+
+    html += `<div id="output-scroll" class="rx-out" style="border-radius:6px;border:1px solid #151515;background:#0b0b0b;padding:20px;overflow-y:auto;min-height:300px;max-height:calc(100vh - 260px)">`;
+    html += renderMd(state.response || "");
+    if (state.status === "loading") {
+      html += `<span style="display:inline-block;width:7px;height:14px;background:#c8a45a;animation:blink 1s step-end infinite"></span>`;
+    }
+    html += `</div>`;
+
+    // Follow-up
+    if (state.status === "complete") {
+      html += `<div style="margin-top:12px;display:flex;gap:8px;align-items:stretch">`;
+      html += `<input id="input-followup" value="${esc(state.followUp)}" oninput="state.followUp=this.value" onkeydown="if(event.key==='Enter')handleFollowUp()" placeholder="Follow-up: refine, drill deeper, or request specific deliverable..." style="flex:1;background:#0b0b0b;border:1px solid #1a1a1a;border-radius:4px;padding:8px 12px;color:#a0a0a0;font-size:12px;font-family:'JetBrains Mono',monospace">`;
+      const fuOpacity = state.followUp.trim() ? 1 : 0.3;
+      const fuCursor = state.followUp.trim() ? "pointer" : "default";
+      html += `<button onclick="handleFollowUp()" ${state.followUp.trim() ? '' : 'disabled'} style="padding:8px 16px;border-radius:4px;border:1px solid #c8a45a44;background:rgba(200,164,90,.08);color:#c8a45a;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;cursor:${fuCursor};opacity:${fuOpacity};letter-spacing:.1em">SEND ▶</button>`;
+      html += `<button onclick="copyOutput()" style="padding:8px 12px;border-radius:4px;border:1px solid #1a1a1a;background:none;color:#4a4a4a;font-size:10px;font-family:'JetBrains Mono',monospace;cursor:pointer;letter-spacing:.08em">COPY</button>`;
+      html += `</div>`;
+    }
+  }
+
+  document.getElementById("panel-output").innerHTML = html;
+
+  // Auto-scroll
+  const scrollEl = document.getElementById("output-scroll");
+  if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════════════
+
+function toggleModule(engineKey, moduleId) {
+  const arr = state.selections[engineKey];
+  const idx = arr.indexOf(moduleId);
+  if (idx >= 0) arr.splice(idx, 1);
+  else arr.push(moduleId);
+  renderAll();
+}
+
+function toggleEngineCollapse(engineKey) {
+  state.collapsed[engineKey] = !state.collapsed[engineKey];
+  renderEngineList();
+}
+
+function applyPreset(label) {
+  const preset = PRESETS.find(p => p.label === label);
+  if (!preset) return;
+  Object.keys(ENGINES).forEach(k => {
+    state.selections[k] = [...(preset.engines[k] || [])];
+    state.collapsed[k] = !(state.selections[k].length > 0);
+  });
+  renderAll();
+}
+
+function toggleMatterProfile() {
+  state.showMatter = !state.showMatter;
+  renderConfigPanel();
+}
+
+function updateMatterField(key, value) {
+  state.matterProfile[key] = value;
+}
+
+function switchTab(tab) {
+  state.activePanel = tab;
+  document.querySelectorAll(".tab-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.tab === tab);
+  });
+  document.getElementById("panel-config").style.display = tab === "config" ? "" : "none";
+  document.getElementById("panel-output").style.display = tab === "output" ? "" : "none";
+  if (tab === "config") renderConfigPanel();
+  else renderOutputPanel();
+}
+
+function resetAll() {
+  state.response = "";
+  state.status = "idle";
+  state.history = [];
+  state.facts = "";
+  state.question = "";
+  state.followUp = "";
+  state.activePanel = "config";
+  switchTab("config");
+  renderAll();
+}
+
+function copyOutput() {
+  if (navigator.clipboard && state.response) {
+    navigator.clipboard.writeText(state.response);
+  }
+}
+
+function buildPrompt(input) {
+  const engineList = Object.entries(ENGINES)
+    .filter(([k]) => state.selections[k]?.length > 0)
+    .map(([k, e]) => {
+      const mods = state.selections[k].map(id => e.modules.find(m => m.id === id)?.label).filter(Boolean);
+      return `• ${e.name}: ${mods.join(", ")}`;
+    }).join("\n");
+
+  const profileEntries = Object.entries(state.matterProfile).filter(([_, v]) => v?.trim());
+  const matterCtx = profileEntries.length > 0
+    ? `\nMATTER PROFILE:\n${profileEntries.map(([k, v]) => `  ${k}: ${v}`).join("\n")}` : "";
+
+  return `REACTOR INPUT
+═════════════${matterCtx}
+
+CASE FACTS:
+${state.facts || "(See matter profile)"}
+
+SPECIFIC QUESTION / TASK:
+${input}
+
+ENGINES ACTIVATED:
+${engineList || "None selected — use your judgment on which engines apply."}
+
+INSTRUCTIONS:
+1. Execute each activated engine against the input
+2. Use typed output formats from each engine (Authority Cards, Risk Registers, Argument Structures, IR Premises, Defect Matrices, etc.)
+3. Cross-reference between engines — findings from one feed the next
+4. Route through IR Interface where analyzer outputs feed BigLaw construction
+5. Apply Fusion Reactor pipeline logic for execution ordering
+6. Produce INTEGRATED SYNTHESIS fusing all engine outputs
+7. Confidence-calibrate every position
+8. Adversarial stress-test the final position
+9. Conclude with NEXT ACTIONS — specific, sequenced, deadlines where applicable
+10. Flag any approaching deadlines from Case Operations`;
+}
+
+async function executeReactor(inputOverride) {
+  const input = inputOverride || state.question;
+  if (!input.trim() && !state.facts.trim()) return;
+
+  const prompt = buildPrompt(input);
+  state.status = "loading";
+  state.response = "";
+  state.activePanel = "output";
+  switchTab("output");
+  renderHeaderStatus();
+  renderOutputPanel();
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 8000,
+        system: SYSTEM_PROMPT,
+        messages: [...state.history, { role: "user", content: prompt }],
+      }),
+    });
+
+    const data = await res.json();
+    if (data.error) {
+      state.response = `**Error:** ${data.error.message || JSON.stringify(data.error)}`;
+      state.status = "error";
+      renderAll();
+      return;
+    }
+
+    const text = data.content?.filter(b => b.type === "text").map(b => b.text).join("\n") || "No response.";
+    state.response = text;
+    state.history.push({ role: "user", content: prompt }, { role: "assistant", content: text });
+    state.status = "complete";
+  } catch (err) {
+    state.response = `**Network error:** ${err.message}`;
+    state.status = "error";
+  }
+
+  renderAll();
+}
+
+function handleFollowUp() {
+  if (!state.followUp.trim()) return;
+  const input = state.followUp;
+  state.followUp = "";
+  executeReactor(input);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MASTER RENDER
+// ═══════════════════════════════════════════════════════════════
+function renderAll() {
+  renderHeaderStatus();
+  renderEngineList();
+  if (state.activePanel === "config") renderConfigPanel();
+  else renderOutputPanel();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+renderPresetList();
+renderAll();
+</script>
+</body>
+</html>
